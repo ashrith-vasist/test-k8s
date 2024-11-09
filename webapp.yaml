@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: ash1810/test-k8s:latest
+        ports:
+        - containerPort: 5000
+        env:
+          - name: USER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: mysql-user
+
+          - name: USER_PWD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: mysql-password
+
+          - name: DB_URL
+            valueFrom:
+              configMapKeyRef:
+                name: mysql-config
+                key: mysql-url  # Changed from mysql-url to sql-url
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: NodePort
+  selector:
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 30100
