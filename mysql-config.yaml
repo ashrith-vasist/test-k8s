@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mysql-config
-data:
-  mysql-url: mysql-service  # Make sure the key matches what you use in webapp.yaml
